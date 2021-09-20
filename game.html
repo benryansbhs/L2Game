@@ -13,13 +13,34 @@
             canvas = document.getElementById('gameCanvas');
             canvasContext = canvas.getContext('2d');
 
+            document.addEventListener('keydown', keyPressed);
+            document.addEventListener('keyup', keyReleased);
+
             setInterval(mainloop, 1000/50);
         }
+
+        const LEFT_KEY = 65;        /* 'A' */
+        const RIGHT_KEY = 68;       /* 'D' */
+        const UP_KEY = 87;          /* 'W' */
+        const DOWN_KEY = 83;        /* 'S' */
+        const JUMP_KEY = 32;        /* 'SPACE' */
+        const USE_KEY = 69;         /* 'E' */
+        const INV_KEY = 9;          /* 'TAB' */
+
+        var leftKeyPressed = false;
+        var rightKeyPressed = false;
+        var upKeyPressed = false;
+        var downKeyPressed = false;
+        var jumpKeyPressed = false;
+        var useKeyPressed = false;
+        var invKeyPressed = false;
 
         var pXpos = 0;
         var pYpos = 0;
         var pXspeed = 5;
         var pYspeed = 5;
+        var pYvel = 0;
+        var pJump = false;
         const pSIZE = 25;
 
         var eXpos = 300;
@@ -38,5 +59,101 @@
             canvasContext.fillStyle = c;
             canvasContext.fillRect(x,y,w,h);
         }
+
+        function keyPressed(evt) {
+            console.log(evt.keyCode);
+            if (evt.keyCode == LEFT_KEY) {
+                leftKeyPressed = true;
+            }
+            if (evt.keyCode == RIGHT_KEY) {
+                rightKeyPressed = true;
+            }
+            if (evt.keyCode == UP_KEY) {
+                upKeyPressed = true;
+            }
+            if (evt.keyCode == DOWN_KEY) {
+                downKeyPressed = true;
+            }
+            if (evt.keyCode == JUMP_KEY) {
+                jumpKeyPressed = true;
+                jumping = true;
+            }
+            if (evt.keyCode == USE_KEY) {
+                useKeyPressed = true;
+            }
+            if (evt.keyCode == INV_KEY) {
+                invKeyPressed = true;
+            }
+        }
+
+        function keyReleased(evt) {
+            if (evt.keyCode == LEFT_KEY) {
+                leftKeyPressed = false;
+            }
+            if (evt.keyCode == RIGHT_KEY) {
+                rightKeyPressed = false;
+            }
+            if (evt.keyCode == UP_KEY) {
+                upKeyPressed = false;
+            }
+            if (evt.keyCode == DOWN_KEY) {
+                downKeyPressed = false;
+            }
+            if (evt.keyCode == JUMP_KEY) {
+                jumpKeyPressed = false;
+            }
+            if (evt.keyCode == USE_KEY) {
+                useKeyPressed = false;
+            }
+            if (evt.keyCode == INV_KEY) {
+                invKeyPressed = false;
+            }
+        }
+
+        function playerMove() {
+            if (leftKeyPressed) {
+                pXpos -= pXspeed;
+                if(pXpos < 0){
+                    pXpos += pXspeed;
+                }
+            }
+            if (rightKeyPressed) {
+                pXpos += pXspeed;
+                if(pXpos > canvas.width - pSIZE){
+                    pXpos -= pXspeed;
+                }
+            }
+            if (upKeyPressed) {
+                pYpos -= pYspeed;
+                if(pYpos < 0){
+                    pYpos += pYspeed;
+                }
+            }
+            if (downKeyPressed) {
+                pYpos += pYspeed;
+                if(pYpos > canvas.height - pSIZE){
+                    pYpos -= pYspeed;
+                }
+            }
+            if(jumpKeyPressed){
+                 pYvel = 7;
+                if (pYpos < 0){
+                    pYvel = -5;
+                }
+            }
+            if(pJump) {
+                pYpos -= pYvel;
+                pYvel -= 0.3;
+                
+                if(pYpos > canvas.height){
+                    pYvel = 0;
+                    pYpos = canvas.height - pSIZE;
+                    pJump = false;
+                }
+            }
+
+        }
+
+
     </script>
 </body>
