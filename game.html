@@ -1,0 +1,42 @@
+<!doctype html>
+<head>
+    <title>12 Credits</title>
+</head>
+
+<body>
+    <canvas id="gameCanvas" height="600" width="1200"></canvas>
+    <script>
+        var canvas;
+        var canvasContext;
+
+        window.onload = function(){
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d');
+
+            setInterval(mainloop, 1000/50);
+        }
+
+        var pXpos = 0;
+        var pYpos = 0;
+        var pXspeed = 5;
+        var pYspeed = 5;
+        const pSIZE = 25;
+
+        var eXpos = 300;
+        var eYpos = 300;
+        var eXspeed = 5;
+        var eYspeed = 5;
+        const eSIZE = 20;
+
+        function mainloop(){
+            colorRect(0,0,canvas.width,canvas.height,'black');
+            colorRect(pXpos,pYpos,pSIZE, pSIZE,'green');
+            colorRect(eXpos,eYpos,eSIZE, eSIZE,'red');
+        }
+
+        function colorRect(x,y,w,h,c){
+            canvasContext.fillStyle = c;
+            canvasContext.fillRect(x,y,w,h);
+        }
+    </script>
+</body>
