@@ -19,6 +19,11 @@
             setInterval(mainloop, 1000/50);
         }
 
+        /* xpos, xwidth, ypos, yheight */
+        /* sml platform = 347 to 469, 384 to 394,  */
+        /* med platform = 703 to 854, 348 to 359,  */
+        /* lrg platform = 474 to 670, 278 to 288,  */
+
         const LEFT_KEY = 65;        /* 'A' */
         const RIGHT_KEY = 68;       /* 'D' */
         const UP_KEY = 87;          /* 'W' */
@@ -36,7 +41,7 @@
         var invKeyPressed = false;
 
         var pXpos = 0;
-        var pYpos = 0;
+        var pYpos = 575;
         var pXspeed = 5;
         var pYspeed = 5;
         var pYvel = 0;
@@ -45,19 +50,50 @@
 
         var eXpos = 300;
         var eYpos = 300;
-        var eXspeed = 5;
-        var eYspeed = 5;
+        var eXspeed = 4;
+        var eYspeed = 4;
         const eSIZE = 20;
 
+        var blockXpos = 300;
+        var blockYpos = 450;
+        var block_width = 600;
+        var block_height = 50;
+
+        var Bg = new Image();
+        Bg.src = 'FINAL_VERSION/BG.png';
+
+        var gameRun = true;
+
         function mainloop(){
-            colorRect(0,0,canvas.width,canvas.height,'black');
+            
+
+            if(gameRun){
+            drawImg(Bg,0,0,1200,600);
             colorRect(pXpos,pYpos,pSIZE, pSIZE,'green');
             colorRect(eXpos,eYpos,eSIZE, eSIZE,'red');
+            colorRect(blockXpos, blockYpos, block_width, block_height, 'blue');
+
+            playerMove();
+            enemyMove();
+            }
+            else {
+                colorRect(0,0,canvas.width, canvas.height)
+            }
+
         }
 
         function colorRect(x,y,w,h,c){
             canvasContext.fillStyle = c;
             canvasContext.fillRect(x,y,w,h);
+        }
+        
+        function colorText(msg,x,y,f,c){
+            canvasContext.fillStyle = c;
+            canvasContext.fillRect(x,y,w,h);
+        }
+
+        function drawImg(src,x,y,w,h){
+            canvasContext.drawImage(src,x,y,w,h);
         }
 
         function keyPressed(evt) {
@@ -111,37 +147,44 @@
         }
 
         function playerMove() {
-            if (leftKeyPressed) {
+            if (leftKeyPressed == true) {
                 pXpos -= pXspeed;
                 if(pXpos < 0){
                     pXpos += pXspeed;
                 }
+                if(pXpos < blockXpos + block_width && pYpos < blockYpos + block_height && pYpos > blockYpos){
+                    pXpos += pXspeed;
+                }
             }
-            if (rightKeyPressed) {
+            if (rightKeyPressed == true) {
                 pXpos += pXspeed;
                 if(pXpos > canvas.width - pSIZE){
                     pXpos -= pXspeed;
                 }
+                if(pXpos > blockXpos && pYpos < blockYpos + block_height && pYpos > blockYpos || pXpos + pSIZE > blockXpos && pYpos < blockYpos + block_height && pYpos > blockYpos){
+                    pXpos -= pXspeed;
+                }
             }
-            if (upKeyPressed) {
+            if (upKeyPressed == true) {
                 pYpos -= pYspeed;
                 if(pYpos < 0){
                     pYpos += pYspeed;
                 }
             }
-            if (downKeyPressed) {
+          /*  if (downKeyPressed == true) {
                 pYpos += pYspeed;
                 if(pYpos > canvas.height - pSIZE){
                     pYpos -= pYspeed;
                 }
-            }
-            if(jumpKeyPressed){
+            } */
+            if(jumpKeyPressed == true){
                  pYvel = 7;
+                 pJump = true;
                 if (pYpos < 0){
                     pYvel = -5;
                 }
             }
-            if(pJump) {
+            if(pJump == true) {
                 pYpos -= pYvel;
                 pYvel -= 0.3;
                 
@@ -150,8 +193,32 @@
                     pYpos = canvas.height - pSIZE;
                     pJump = false;
                 }
+                if(pYpos > blockYpos && pYpos < blockYpos + block_height && pXpos < blockXpos + block_width && pXpos > blockXpos){
+                    pYvel = 0;
+                    pYpos = blockYpos - pSIZE;
+                    pJump = false;
+                }
+                if(pYpos < blockYpos + block_height && pYpos > blockYpos && pXpos < blockXpos + block_width && pXpos > blockXpos){
+                    pYpos -= pYvel;
+                    pJump = false;
+                }
             }
 
+        }
+
+        function enemyMove(){
+            if(pXpos > eXpos){
+                eXpos += eXspeed;
+            }
+            if(pXpos < eXpos){
+                eXpos -= eXspeed;
+            }
+            if(pYpos > eYpos){
+                eYpos += eYspeed;
+            }
+            if(pYpos < eYpos){
+                eYpos -= eYspeed;
+            }
         }
 
 
