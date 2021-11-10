@@ -26,41 +26,52 @@
 
         const LEFT_KEY = 65;        /* 'A' */
         const RIGHT_KEY = 68;       /* 'D' */
-        const UP_KEY = 87;          /* 'W' */
-        const DOWN_KEY = 83;        /* 'S' */
-        const JUMP_KEY = 32;        /* 'SPACE' */
-        const USE_KEY = 69;         /* 'E' */
-        const INV_KEY = 9;          /* 'TAB' */
+        const JUMP_KEY = 87;          /* 'W' */
+        const USE_KEY = 32;         /* 'E' */
+
 
         var leftKeyPressed = false;
         var rightKeyPressed = false;
-        var upKeyPressed = false;
-        var downKeyPressed = false;
         var jumpKeyPressed = false;
         var useKeyPressed = false;
-        var invKeyPressed = false;
 
         var pXpos = 0;
         var pYpos = 575;
         var pXspeed = 5;
-        var pYspeed = 5;
         var pYvel = 0;
         var pJump = false;
         const pSIZE = 25;
 
         var eXpos = 300;
         var eYpos = 300;
-        var eXspeed = 4;
-        var eYspeed = 4;
-        const eSIZE = 20;
+        var eXspeed = 3;
+        var eYvel = 0;
+        const eSIZE = 25;
 
-        var blockXpos = 300;
-        var blockYpos = 450;
-        var block_width = 600;
-        var block_height = 50;
+        var smlXpos = 347;
+        var smlYpos = 384;
+        var sml_width = 122;
+        var sml_height = 10;
 
-        var Bg = new Image();
-        Bg.src = 'FINAL_VERSION/BG.png';
+        var medXpos = 703;
+        var medYpos = 348;
+        var med_width = 151;
+        var med_height = 11;
+
+
+        var lrgXpos = 474;
+        var lrgYpos = 278;
+        var lrg_width = 196;
+        var lrg_height = 10;
+
+        var bg = new Image();
+        bg.src = 'background.png';
+
+        var userName = ' ';
+
+        while(userName == ' ' || userName == null) {
+            userName = prompt('What is your name?');
+        }
 
         var gameRun = true;
 
@@ -68,16 +79,20 @@
             
 
             if(gameRun){
-            drawImg(Bg,0,0,1200,600);
+            drawImg(bg,0,0,1200,600);
+            // colorRect(0, 0, canvas.width,canvas.height, 'black');
+            // colorRect(smlXpos, smlYpos, sml_width, sml_height, 'blue');
+            // colorRect(medXpos, medYpos, med_width, med_height, 'purple');
+            // colorRect(lrgXpos, lrgYpos, lrg_width, lrg_height, 'orange');
             colorRect(pXpos,pYpos,pSIZE, pSIZE,'green');
             colorRect(eXpos,eYpos,eSIZE, eSIZE,'red');
-            colorRect(blockXpos, blockYpos, block_width, block_height, 'blue');
+            
 
             playerMove();
             enemyMove();
             }
             else {
-                colorRect(0,0,canvas.width, canvas.height)
+                colorRect(0,0,canvas.width, canvas.height, 'red');
             }
 
         }
@@ -104,21 +119,12 @@
             if (evt.keyCode == RIGHT_KEY) {
                 rightKeyPressed = true;
             }
-            if (evt.keyCode == UP_KEY) {
-                upKeyPressed = true;
-            }
-            if (evt.keyCode == DOWN_KEY) {
-                downKeyPressed = true;
-            }
             if (evt.keyCode == JUMP_KEY) {
                 jumpKeyPressed = true;
                 jumping = true;
             }
             if (evt.keyCode == USE_KEY) {
                 useKeyPressed = true;
-            }
-            if (evt.keyCode == INV_KEY) {
-                invKeyPressed = true;
             }
         }
 
@@ -129,20 +135,11 @@
             if (evt.keyCode == RIGHT_KEY) {
                 rightKeyPressed = false;
             }
-            if (evt.keyCode == UP_KEY) {
-                upKeyPressed = false;
-            }
-            if (evt.keyCode == DOWN_KEY) {
-                downKeyPressed = false;
-            }
             if (evt.keyCode == JUMP_KEY) {
                 jumpKeyPressed = false;
             }
             if (evt.keyCode == USE_KEY) {
                 useKeyPressed = false;
-            }
-            if (evt.keyCode == INV_KEY) {
-                invKeyPressed = false;
             }
         }
 
@@ -152,31 +149,36 @@
                 if(pXpos < 0){
                     pXpos += pXspeed;
                 }
-                if(pXpos < blockXpos + block_width && pYpos < blockYpos + block_height && pYpos > blockYpos){
+                
+                    if(pXpos < smlXpos + sml_width && pYpos < smlYpos + sml_height && pYpos > smlYpos){
                     pXpos += pXspeed;
-                }
+                    }
+
+                    if(pXpos < medXpos + med_width && pYpos < medYpos + med_height && pYpos > medYpos){
+                    pXpos += pXspeed;
+                    }
+
+                    if(pXpos < lrgXpos + lrg_width && pYpos < lrgYpos + lrg_height && pYpos > lrgYpos){
+                    pXpos += pXspeed;
+                    }
             }
             if (rightKeyPressed == true) {
                 pXpos += pXspeed;
                 if(pXpos > canvas.width - pSIZE){
                     pXpos -= pXspeed;
                 }
-                if(pXpos > blockXpos && pYpos < blockYpos + block_height && pYpos > blockYpos || pXpos + pSIZE > blockXpos && pYpos < blockYpos + block_height && pYpos > blockYpos){
+                if(pXpos > smlXpos && pYpos < smlYpos + sml_height && pYpos > smlYpos || pXpos + pSIZE > smlXpos && pYpos < smlYpos + sml_height && pYpos > smlYpos){
+                    pXpos -= pXspeed;
+                }
+
+                if(pXpos > medXpos && pYpos < medYpos + med_height && pYpos > medYpos || pXpos + pSIZE > medXpos && pYpos < medYpos + med_height && pYpos > medYpos){
+                    pXpos -= pXspeed;
+                }
+
+                if(pXpos > lrgXpos && pYpos < lrgYpos + lrg_height && pYpos > lrgYpos || pXpos + pSIZE > lrgXpos && pYpos < lrgYpos + lrg_height && pYpos > lrgYpos){
                     pXpos -= pXspeed;
                 }
             }
-            if (upKeyPressed == true) {
-                pYpos -= pYspeed;
-                if(pYpos < 0){
-                    pYpos += pYspeed;
-                }
-            }
-          /*  if (downKeyPressed == true) {
-                pYpos += pYspeed;
-                if(pYpos > canvas.height - pSIZE){
-                    pYpos -= pYspeed;
-                }
-            } */
             if(jumpKeyPressed == true){
                  pYvel = 7;
                  pJump = true;
@@ -213,12 +215,12 @@
             if(pXpos < eXpos){
                 eXpos -= eXspeed;
             }
-            if(pYpos > eYpos){
-                eYpos += eYspeed;
-            }
-            if(pYpos < eYpos){
-                eYpos -= eYspeed;
-            }
+            // if(pYpos > eYpos){
+            //     eYpos += eYspeed;
+            // }
+            // if(pYpos < eYpos){
+            //     eYpos -= eYspeed;
+            // }
         }
 
 
