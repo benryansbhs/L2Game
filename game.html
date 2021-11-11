@@ -4,7 +4,7 @@
 </head>
 
 <body>
-    <canvas id="gameCanvas" height="600" width="1200"></canvas>
+    <canvas id="gameCanvas" height="550" width="1100"></canvas>
     <script>
         var canvas;
         var canvasContext;
@@ -36,11 +36,14 @@
         var useKeyPressed = false;
 
         var pXpos = 0;
-        var pYpos = 575;
+        var pYpos = 525;
         var pXspeed = 5;
         var pYvel = 0;
         var pJump = false;
-        const pSIZE = 25;
+        var dWidth = 22;
+        var dHeight = 34;
+        var sWidth = 11;
+        var sHeight = 17;
 
         var eXpos = 300;
         var eYpos = 300;
@@ -67,16 +70,46 @@
         var bg = new Image();
         bg.src = 'background.png';
 
+        var player = new Image();
+        player.src = 'player.png';
+
+        var gameRun = true;
+        var setup = true;
+
         var userName = ' ';
 
         while(userName == ' ' || userName == null) {
             userName = prompt('What is your name?');
         }
 
-        var gameRun = true;
+        var difficulty = 'easy';
+
+        var pass = false;
+        while(pass == false){
+            difficulty = prompt('Choose a difficulty. Easy. Normal. Hard');
+            difficulty = difficulty.toLowerCase();
+            if(difficulty == 'easy' || difficulty == 'normal' || difficulty == 'hard'){
+                pass = true;
+            }
+        }
+
+        if(difficulty == 'easy'){
+            setInterval(mainloop, 1000/5);
+        }
+
+        if(difficulty == 'normal'){
+            setInterval(mainloop, 1000/20);
+        }
+
+        if(difficulty == 'hard'){
+            setInterval(mainloop, 1000/50);
+        }
 
         function mainloop(){
-            
+            if(setup){
+                playerLocCal();
+                setup = false;
+            }
 
             if(gameRun){
             drawImg(bg,0,0,1200,600);
@@ -84,11 +117,16 @@
             // colorRect(smlXpos, smlYpos, sml_width, sml_height, 'blue');
             // colorRect(medXpos, medYpos, med_width, med_height, 'purple');
             // colorRect(lrgXpos, lrgYpos, lrg_width, lrg_height, 'orange');
-            colorRect(pXpos,pYpos,pSIZE, pSIZE,'green');
+            // colorRect(pXpos,pYpos,pSIZE, pSIZE,'green');
+            drawImgs(player,playerSpriteCoors[Math.floor(playerSpriteNum)][0],
+            playerSpriteCoors[Math.floor(playerSpriteNum)][1],sWidth,sHeight,
+            pXpos,pYpos,dWidth,dHeight);
             colorRect(eXpos,eYpos,eSIZE, eSIZE,'red');
             
 
             playerMove();
+            playerMoveAnimation();
+
             enemyMove();
             }
             else {
@@ -102,16 +140,22 @@
             canvasContext.fillRect(x,y,w,h);
         }
         
-        function colorText(msg,x,y,f,c){
+        function colorText(msg,x,y,f,c){                    //Text to show score and username on lose screen
             canvasContext.fillStyle = c;
             canvasContext.fillRect(x,y,w,h);
         }
 
-        function drawImg(src,x,y,w,h){
+        function drawImg(src,x,y,w,h){                      //Used for importing background image to use
             canvasContext.drawImage(src,x,y,w,h);
         }
 
-        function keyPressed(evt) {
+        function playerMoveAnimation(){                     // loops spritesheet to keep running
+            if(playerSpriteNum > 11){
+                playerSpriteNum = 0;
+            }
+        }
+
+        function keyPressed(evt) {                          //Registers key pressed for player movement  eg: move now
             console.log(evt.keyCode);
             if (evt.keyCode == LEFT_KEY) {
                 leftKeyPressed = true;
@@ -128,7 +172,7 @@
             }
         }
 
-        function keyReleased(evt) {
+        function keyReleased(evt) {                         //Registers key released for player movement    eg: stop moving now
             if (evt.keyCode == LEFT_KEY) {
                 leftKeyPressed = false;
             }
@@ -143,14 +187,19 @@
             }
         }
 
-        function playerMove() {
+        function playerMove() {                                     // Runs player movement when keys are pressed
             if (leftKeyPressed == true) {
                 pXpos -= pXspeed;
+                playerSpriteNum += 0.2;
+
+                if(playerSpriteNum < 7 || playerSpriteNum > 10){                //loops player animation when moving left
+                    playerSpriteNum = 7;
+                }
                 if(pXpos < 0){
                     pXpos += pXspeed;
                 }
                 
-                    if(pXpos < smlXpos + sml_width && pYpos < smlYpos + sml_height && pYpos > smlYpos){
+                    if(pXpos < smlXpos + sml_width && pYpos < smlYpos + sml_height +  && pYpos > smlYpos){                 // stops player entering platform from the right side
                     pXpos += pXspeed;
                     }
 
@@ -164,10 +213,15 @@
             }
             if (rightKeyPressed == true) {
                 pXpos += pXspeed;
-                if(pXpos > canvas.width - pSIZE){
+                playerSpriteNum += 0.2;
+
+                if(playerSpriteNum < 3 || playerSpriteNum > 6){             //loops player animation when running right
+                    playerSpriteNum = 3;
+                }
+                if(pXpos > canvas.width - dWidth){
                     pXpos -= pXspeed;
                 }
-                if(pXpos > smlXpos && pYpos < smlYpos + sml_height && pYpos > smlYpos || pXpos + pSIZE > smlXpos && pYpos < smlYpos + sml_height && pYpos > smlYpos){
+                if(pXpos > smlXpos && pYpos < smlYpos + sml_height && pYpos > smlYpos || pXpos + pSIZE > smlXpos && pYpos < smlYpos + sml_height && pYpos > smlYpos){       //stops player entering platforms from left side
                     pXpos -= pXspeed;
                 }
 
@@ -179,7 +233,7 @@
                     pXpos -= pXspeed;
                 }
             }
-            if(jumpKeyPressed == true){
+            if(jumpKeyPressed == true){                 // Jumping function
                  pYvel = 7;
                  pJump = true;
                 if (pYpos < 0){
@@ -190,22 +244,116 @@
                 pYpos -= pYvel;
                 pYvel -= 0.3;
                 
-                if(pYpos > canvas.height){
+                if(pYpos > canvas.height){              // stops player leaving screen when jumping
                     pYvel = 0;
                     pYpos = canvas.height - pSIZE;
                     pJump = false;
                 }
-                if(pYpos > blockYpos && pYpos < blockYpos + block_height && pXpos < blockXpos + block_width && pXpos > blockXpos){
+                if(pYpos + pSIZE > smlYpos && pXpos < smlXpos + sml_width && pXpos > smlXpos){          //Stops player passing through platform top to bottom
                     pYvel = 0;
-                    pYpos = blockYpos - pSIZE;
+                    pYpos = smlYpos - pSIZE;
                     pJump = false;
                 }
-                if(pYpos < blockYpos + block_height && pYpos > blockYpos && pXpos < blockXpos + block_width && pXpos > blockXpos){
+
+                if(pYpos + pSIZE > medYpos && pYpos < medYpos + med_height && pXpos < medXpos + med_width && pXpos > medXpos){
+                    pYvel = 0;
+                    pYpos = medYpos - pSIZE;
+                    pJump = false;
+                }
+
+                if(pYpos > lrgYpos && pYpos < lrgYpos + lrg_height && pXpos < lrgXpos + lrg_width && pXpos > lrgXpos){
+                    pYvel = 0;
+                    pYpos = lrgYpos - pSIZE;
+                    pJump = false;
+                }
+
+                if(pYpos < smlYpos + sml_height && pXpos + pSIZE < smlXpos + sml_width && pXpos > smlXpos){             //Stops player passing through platform bottom to top
                     pYpos -= pYvel;
                     pJump = false;
                 }
+
+                if(pYpos < medYpos + med_height && pYpos > medYpos && pXpos < medXpos + med_width && pXpos > medXpos){
+                    pYpos -= pYvel;
+                    pJump = false;
+                }
+
+                if(pYpos < lrgYpos + lrg_height && pYpos > lrgYpos && pXpos < lrgXpos + lrg_width && pXpos > lrgXpos){
+                    pYpos += pYvel;
+                    pJump = false;
+                }
+            }
+            if(pXpos  + pSIZE > lrgXpos + lrg_width && pYpos  + pSIZE < medYpos && pJump == false){         //player falls off edge of platform rather than floating until pJump is true
+                pYvel = -6;
+                pYpos -= pYvel;
+            }
+            
+            if(pXpos  + pSIZE < lrgXpos && pYpos  + pSIZE < smlYpos && pJump == false){
+                pYvel = -6;
+                pYpos -= pYvel;
             }
 
+            if(pXpos + pSIZE < smlXpos && pYpos > smlXpos + pSIZE && pJump == false){
+                pYvel = -6;
+                pYpos -= -6;
+            }
+        }
+
+
+        var playerSpriteCoors = [];                     //Spritesheet animation for player
+        var playerImgCount = 0;
+        var playerRowCount = 0;
+        var playerSpriteNum = 0;
+
+        var enemySpriteCoors = [];
+        var enemyImgCount = 0;
+        var enemyRowCount = 0;
+        var enemySpriteNum = 0;
+
+        var totalImgs = 12;
+
+        function drawImgs(src,sx,sy,sw,sh,dx,dy,dw,dh){
+            canvasContext.drawImage(src,sx,sy,sw,sh,dx,dy,dw,dh);
+        }
+
+        function playerLocCal(){
+            for(var i = 0; totalImgs > i; i++){
+                playerSpriteCoors[i] = new Array(2); 
+
+                playerSpriteCoors[i][0] = sWidth * (playerImgCount % 4); // x pos
+                
+                if(playerImgCount%4 == 0 && playerImgCount != 0){
+                    playerRowCount++;
+                    playerSpriteCoors[i][1] = sHeight * playerRowCount; // y pos
+                } else {
+                    playerSpriteCoors[i][1] = sHeight * playerRowCount; // y pos
+                }
+                
+                playerImgCount++;
+            }
+        }
+
+        function enemyLocCal(){
+            for(var i = 0; totalImgs > i; i++){
+                enemySpriteCoors[i] = new Array(2); 
+
+                enemySpriteCoors[i][0] = sWidth * (enemyImgCount % 4); // x pos
+                
+                if(enemyImgCount%4 == 0 && enemyImgCount != 0){
+                    enemyRowCount++;
+                    enemySpriteCoors[i][1] = sHeight * enemyRowCount; // y pos
+                } else {
+                    enemySpriteCoors[i][1] = sHeight * enemyRowCount; // y pos
+                }
+                
+                enemyImgCount++;
+            }
+        }
+
+        var enemies = [];
+
+        function makeEnemy(){
+            
+            var enemyXpos = canavs.width || 0 - enemySIZE;
         }
 
         function enemyMove(){
